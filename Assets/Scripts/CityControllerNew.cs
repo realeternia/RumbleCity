@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CityController : EventTrigger 
+public class CityControllerNew : MonoBehaviour, IPointerClickHandler
 {
     // Start is called before the first frame update
     void Start()
@@ -17,9 +17,12 @@ public class CityController : EventTrigger
         
     }
 
-    public override void OnPointerClick(PointerEventData eventData)
-    {
-        base.OnPointerClick(eventData);
-        Debug.Log("Scene Obj Click");
+    public void SendABC(string msg)
+    {    Debug.Log("Scene Obj SendABC " + msg);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {    
+        Debug.Log("Scene Obj OnPointerClick");
     }
 }

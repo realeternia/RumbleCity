@@ -202,6 +202,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -313,6 +314,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -467,6 +469,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -578,6 +581,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -624,6 +628,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: Main Camera
@@ -765,6 +770,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Plane: {fileID: 897343262}
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c49b4cc203aa6414fae5c798d1d0e7d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EventMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_MaxRayIntersections: 0
 --- !u!1 &369343939
 GameObject:
   m_ObjectHideFlags: 0
@@ -843,6 +864,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1074,6 +1096,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1185,6 +1208,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1330,6 +1354,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1390,8 +1415,8 @@ GameObject:
   - component: {fileID: 897343266}
   - component: {fileID: 897343265}
   - component: {fileID: 897343264}
-  - component: {fileID: 897343267}
   - component: {fileID: 897343268}
+  - component: {fileID: 897343270}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: Cylinder
@@ -1458,6 +1483,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1491,18 +1517,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 897343262}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &897343267
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 897343262}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ee65cb9c668a3a4da0806af09363315, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &897343268
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1520,18 +1534,30 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 897343267}
-          m_TargetAssemblyTypeName: CityController, Assembly-CSharp
-          m_MethodName: OnClick
-          m_Mode: 1
+        - m_Target: {fileID: 897343270}
+          m_TargetAssemblyTypeName: CityControllerNew, Assembly-CSharp
+          m_MethodName: SendABC
+          m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: 
+            m_StringArgument: 13231
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &897343270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 897343262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7ff7dc41d075541ae1f8cb513778fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1027733352
 GameObject:
   m_ObjectHideFlags: 0
@@ -1610,6 +1636,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1721,6 +1748,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2029,6 +2057,7 @@ MeshRenderer:
   m_virtualGeometry: 0
   m_virtualGeometryShadow: 0
   m_ShadingRate: 0
+  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
