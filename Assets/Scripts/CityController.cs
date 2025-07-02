@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CityController : MonoBehaviour
+public class CityController : EventTrigger 
 {
     // Start is called before the first frame update
     void Start()
@@ -17,8 +17,9 @@ public class CityController : MonoBehaviour
         
     }
 
-    public void OnClick()
+    public override void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("Plane 被点击了！");
+        base.OnPointerClick(eventData);
+        Debug.Log("Scene Obj Click");
     }
 }
