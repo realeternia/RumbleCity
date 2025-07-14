@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public class CityControllerNew : MonoBehaviour, IPointerClickHandler
 {
     // Start is called before the first frame update
+    public int CityID;
     void Start()
     {
         
