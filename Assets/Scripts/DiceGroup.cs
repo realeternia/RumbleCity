@@ -31,34 +31,34 @@ public class DiceGroup : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-             Debug.Log("GetMouseButtonDown");
-            // initial click to roll a dice
-            initPos = Input.mousePosition;
+        // if (Input.GetMouseButtonDown(0))
+        // {
+        //      Debug.Log("GetMouseButtonDown");
+        //     // initial click to roll a dice
+        //     initPos = Input.mousePosition;
             
-            // return x component of dice from screen to view point
-            initXpose = cam.ScreenToViewportPoint(Input.mousePosition).x;
-        }
+        //     // return x component of dice from screen to view point
+        //     initXpose = cam.ScreenToViewportPoint(Input.mousePosition).x;
+        // }
         
-        // current position of mouse
-        Vector3 currentPos = Input.mousePosition;
+        // // current position of mouse
+        // Vector3 currentPos = Input.mousePosition;
         
-        if (Input.GetMouseButtonUp(0))
-        {
-            Debug.Log("GetMouseButtonUp");
-            Vector3 newPos = cam.ScreenToWorldPoint(currentPos);
-            initPos = cam.ScreenToWorldPoint(initPos);
+        // if (Input.GetMouseButtonUp(0))
+        // {
+        //     Debug.Log("GetMouseButtonUp");
+        //     Vector3 newPos = cam.ScreenToWorldPoint(currentPos);
+        //     initPos = cam.ScreenToWorldPoint(initPos);
             
-            // Method use to roll the dice
-            RollTheDice(newPos);
-            // use identify face value on dice
-            StartCoroutine(GetDiceCount());
-        }
+        //     // Method use to roll the dice
+        //     RollTheDice(newPos);
+        //     // use identify face value on dice
+        //     StartCoroutine(GetDiceCount());
+        // }
     }
 
     // Method Roll the Dice
-    void RollTheDice(Vector3 lastPos)
+    public void RollTheDice(Action<List<int>> callback = null)
     {
         if (diceObject != null)
         {
@@ -66,7 +66,6 @@ public class DiceGroup : MonoBehaviour
             {
                 if (dice != null && dice.GetComponent<Rigidbody>() != null)
                 {
-                    Debug.Log("RollTheDice");
                     Rigidbody rb = dice.GetComponent<Rigidbody>();
                     
                     // 生成 x-z 方向的随机向量并归一化
@@ -78,10 +77,13 @@ public class DiceGroup : MonoBehaviour
                 }
             }
         }
+
+        StartCoroutine(GetDiceCount(callback));
     }
 
-    IEnumerator GetDiceCount()
-    {   
+    IEnumerator GetDiceCount(Action<List<int>> callback = null)
+
+    {
         resultText.text = "";
         yield return new WaitForSeconds(0.5f);
         List<int> results = new List<int>();
@@ -120,13 +122,15 @@ public class DiceGroup : MonoBehaviour
                     diceValue = 2; //2
                } else if (distanceInRange((int)rot.x, 0, 15) && distanceInRange((int)rot.z, 180, 15) ) {
                     diceValue = 3; //3
-                }                
+                }
                 
                 Debug.Log("骰子 " + dice.name + " 的点数是: " + diceValue + " x:" + rot.x + " z:"+ rot.z);
                 results.Add(diceValue);
             }
         }
         resultText.text = "点数: " + string.Join(", ", results);
+        callback?.Invoke(results);
+
     }
 
     private bool distanceInRange(int rot, int target, int dis)
