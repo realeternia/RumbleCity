@@ -7,6 +7,7 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
 {
     // Start is called before the first frame update
     public int CityID;
+    public TMPro.TMP_Text Text;
     private int soldierTotal;
     private Dictionary<int, int> soldierCounts = new Dictionary<int, int>();
     void Start()
@@ -20,11 +21,12 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
         
     }
 
-    public void Init(int cityId)
+    public void Init(int cityId, string cityName)
     {
         CityID = cityId;
         soldierTotal = 0;
         soldierCounts.Clear();
+        Text.text = cityName;
     }
 
     public void SendABC(string msg)

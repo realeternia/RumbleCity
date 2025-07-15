@@ -27,32 +27,33 @@ public class SceneController : MonoBehaviour
             System.Array.Copy(CitySkins, shuffledSkins, CitySkins.Length);
 
             // 打乱 shuffledSkins 顺序以确保不重复分配
-            for (int i = shuffledSkins.Length - 1; i > 0; i--)
-            {
+            for (int i = shuffledSkins.Length - 1; i > 0; i--) {
                 int j = Random.Range(0, i + 1);
                 Material temp = shuffledSkins[i];
                 shuffledSkins[i] = shuffledSkins[j];
                 shuffledSkins[j] = temp;
             }
 
-            for (int i = 0; i < Cities.Length; i++)
-            {
-                if (Cities[i] != null)
-                {
+            // 获取 DataManager 实例
+            DataManager dataManager = GetComponent<DataManager>();
+            List<string> cityNames = dataManager != null ? dataManager.GetRandomCityNames(11) : new List<string>();
+
+            for (int i = 0; i < Cities.Length; i++) {
+                if (Cities[i] != null) {
                     MeshRenderer meshRenderer = Cities[i].GetComponent<MeshRenderer>();
-                    if (meshRenderer != null)
-                    {
+                    if (meshRenderer != null) {
                         meshRenderer.material = shuffledSkins[i];
                     }
                     CityControllerNew cityController = Cities[i].GetComponent<CityControllerNew>();
-                    if (cityController != null)
-                    {
+                    if (cityController != null) {
                         // 查找当前使用的材质在原始 CitySkins 中的索引
-                        for (int j = 0; j < CitySkins.Length; j++)
-                        {
-                            if (shuffledSkins[i] == CitySkins[j])
-                            {
-                                cityController.Init(j + 2);
+                        for (int j = 0; j < CitySkins.Length; j++) {
+                            if (shuffledSkins[i] == CitySkins[j]) {
+                                if (i < cityNames.Count) {
+                                    cityController.Init(j + 2, cityNames[i]);
+                                } else {
+                                    cityController.Init(j + 2, "");
+                                }
                                 break;
                             }
                         }

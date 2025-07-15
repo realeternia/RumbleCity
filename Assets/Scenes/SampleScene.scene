@@ -250,6 +250,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CityID: 0
+  Text: {fileID: 924491076}
 --- !u!1 &4866478
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,7 +264,7 @@ GameObject:
   - component: {fileID: 4866480}
   m_Layer: 5
   m_HasEditorInfo: 1
-  m_Name: Text (TMP) (6)
+  m_Name: citylb7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -622,6 +623,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CityID: 0
+  Text: {fileID: 4866480}
 --- !u!1 &77547119
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,7 +637,7 @@ GameObject:
   - component: {fileID: 77547121}
   m_Layer: 5
   m_HasEditorInfo: 1
-  m_Name: Text (TMP) (2)
+  m_Name: citylb3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -927,6 +929,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CityID: 0
+  Text: {fileID: 689311251}
 --- !u!1 &226270181
 GameObject:
   m_ObjectHideFlags: 0
@@ -1175,6 +1178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CityID: 0
+  Text: {fileID: 1798841350}
 --- !u!1 &284954562
 GameObject:
   m_ObjectHideFlags: 0
@@ -1241,6 +1245,7 @@ GameObject:
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
   - component: {fileID: 330585549}
+  - component: {fileID: 330585550}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: Main Camera
@@ -1427,6 +1432,18 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxRayIntersections: 0
+--- !u!114 &330585550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5def3fbf612f9d468d0e462d2ead987, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &369343939
 GameObject:
   m_ObjectHideFlags: 0
@@ -1553,6 +1570,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CityID: 0
+  Text: {fileID: 77547121}
 --- !u!1001 &378822092
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2114,7 +2132,7 @@ GameObject:
   - component: {fileID: 439044272}
   m_Layer: 5
   m_HasEditorInfo: 1
-  m_Name: Text (TMP) (8)
+  m_Name: citylb11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2803,6 +2821,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CityID: 0
+  Text: {fileID: 1088692006}
 --- !u!1 &689311249
 GameObject:
   m_ObjectHideFlags: 0
@@ -2816,7 +2835,7 @@ GameObject:
   - component: {fileID: 689311251}
   m_Layer: 5
   m_HasEditorInfo: 1
-  m_Name: Text (TMP) (3)
+  m_Name: citylb2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2952,7 +2971,7 @@ GameObject:
   - component: {fileID: 712527273}
   m_Layer: 5
   m_HasEditorInfo: 1
-  m_Name: Text (TMP) (5)
+  m_Name: citylb6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3531,6 +3550,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CityID: 0
+  Text: {fileID: 712527273}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -3855,6 +3875,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CityID: 0
+  Text: {fileID: 2069194003}
 --- !u!1001 &912291007
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4050,7 +4071,7 @@ GameObject:
   - component: {fileID: 924491076}
   m_Layer: 5
   m_HasEditorInfo: 1
-  m_Name: Text (TMP) (7)
+  m_Name: citylb10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4473,6 +4494,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CityID: 0
+  Text: {fileID: 1353150583}
 --- !u!1 &1050284203
 GameObject:
   m_ObjectHideFlags: 0
@@ -4599,6 +4621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CityID: 0
+  Text: {fileID: 439044272}
 --- !u!1 &1056893453
 GameObject:
   m_ObjectHideFlags: 0
@@ -4722,7 +4745,7 @@ GameObject:
   - component: {fileID: 1088692006}
   m_Layer: 5
   m_HasEditorInfo: 1
-  m_Name: Text (TMP) (10)
+  m_Name: citylb8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5078,7 +5101,7 @@ GameObject:
   - component: {fileID: 1231758633}
   m_Layer: 5
   m_HasEditorInfo: 1
-  m_Name: Text (TMP) (4)
+  m_Name: citylb5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5707,7 +5730,7 @@ GameObject:
   - component: {fileID: 1353150583}
   m_Layer: 5
   m_HasEditorInfo: 1
-  m_Name: Text (TMP) (1)
+  m_Name: citylb4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6661,7 +6684,7 @@ GameObject:
   - component: {fileID: 1798841350}
   m_Layer: 5
   m_HasEditorInfo: 1
-  m_Name: Text (TMP) (9)
+  m_Name: citylb9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7376,6 +7399,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CityID: 0
+  Text: {fileID: 1231758633}
 --- !u!1 &1990423270
 GameObject:
   m_ObjectHideFlags: 0
@@ -7808,7 +7832,7 @@ GameObject:
   - component: {fileID: 2069194003}
   m_Layer: 5
   m_HasEditorInfo: 1
-  m_Name: Text (TMP)
+  m_Name: citylb12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
