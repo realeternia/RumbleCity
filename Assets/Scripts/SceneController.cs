@@ -20,6 +20,7 @@ public class SceneController : MonoBehaviour
     void Start()
     {
         Instance = this;
+        Debug.Log("cityNames " + Cities.Length + " " + CitySkins.Length);
         if (Cities.Length == 11 && CitySkins.Length == 11)
         {
             // 创建 CitySkins 的副本用于打乱顺序
@@ -35,8 +36,7 @@ public class SceneController : MonoBehaviour
             }
 
             // 获取 DataManager 实例
-            DataManager dataManager = GetComponent<DataManager>();
-            List<string> cityNames = dataManager != null ? dataManager.GetRandomCityNames(11) : new List<string>();
+            List<string> cityNames = DataManager.Instance.GetRandomCityNames(11);
 
             for (int i = 0; i < Cities.Length; i++) {
                 if (Cities[i] != null) {

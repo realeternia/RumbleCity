@@ -26,7 +26,8 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
         CityID = cityId;
         soldierTotal = 0;
         soldierCounts.Clear();
-        Text.text = cityName;
+        if(!string.IsNullOrEmpty(cityName))
+            Text.text = cityName;
     }
 
     public void SendABC(string msg)

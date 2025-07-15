@@ -3,19 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-public class DataManager : MonoBehaviour
+public class DataManager
 {
+    public static DataManager Instance{ private set; get; }
+
     private List<string> cityNames = new List<string>();
 
+    static DataManager()
+    {
+        Instance = new DataManager();
+        Instance.Init();
+    }
+
     // Start is called before the first frame update
-    void Start()
+    private void Init()
     {
         try
         {
             string filePath = Application.dataPath + "/Resources/Datas/cityname.txt";
             if (File.Exists(filePath))
             {
-                string[] lines = File.ReadAllLines(filePath);
+                string[] lines = File.ReadAllLines(filePath, System.Text.Encoding.UTF8);
                 foreach (string line in lines)
                 {
                     string[] words = line.Split('\t');
@@ -54,11 +62,5 @@ public class DataManager : MonoBehaviour
         }
         
         return result;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
