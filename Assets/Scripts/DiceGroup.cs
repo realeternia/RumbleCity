@@ -101,25 +101,25 @@ public class DiceGroup : MonoBehaviour
                 Vector3 rot = dice.transform.rotation.eulerAngles;
                 var diceValue = 0;
                 if (distanceInRange((int)rot.x, 90, 15)) {
-                    diceValue = 1; //1
+                    diceValue = 6; //6
                 } else if (distanceInRange((int)rot.x, 270, 15)) {
-                    diceValue = 6;
+                    diceValue = 1; //1
                 } else if ((distanceInRange((int)rot.x, -180, 15)) && distanceInRange((int)rot.z, -180, 15) ) {
-                    diceValue = 2;
+                    diceValue = 4; //4
                 } else if ((distanceInRange((int)rot.x, -180, 15)) && distanceInRange((int)rot.z, -90, 15) ) {
-                    diceValue = 3;
+                    diceValue = 2; //2
                 } else if (distanceInRange((int)rot.x, -180, 15) && distanceInRange((int)rot.z, -270, 15) ) {
-                    diceValue = 4;
+                    diceValue = 5; //5
                } else if (distanceInRange((int)rot.x, -180, 15) && distanceInRange((int)rot.z, 0, 15) ) {
-                    diceValue = 5;
+                    diceValue = 3; //3
                 } else if (distanceInRange((int)rot.x, 0, 15) && distanceInRange((int)rot.z, 0, 15) ) {
-                    diceValue = 2;
+                    diceValue = 4; //4
                 } else if (distanceInRange((int)rot.x, 0, 15) && distanceInRange((int)rot.z, 90, 15) ) {
-                    diceValue = 4;
+                    diceValue = 5; //5
                 } else if (distanceInRange((int)rot.x, 0, 15) && distanceInRange((int)rot.z, -90, 15) ) {
-                    diceValue = 3;
+                    diceValue = 2; //2
                } else if (distanceInRange((int)rot.x, 0, 15) && distanceInRange((int)rot.z, 180, 15) ) {
-                    diceValue = 5;
+                    diceValue = 3; //3
                 }                
                 
                 Debug.Log("骰子 " + dice.name + " 的点数是: " + diceValue + " x:" + rot.x + " z:"+ rot.z);
