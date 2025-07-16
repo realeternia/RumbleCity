@@ -10,9 +10,10 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
     public TMPro.TMP_Text Text;
     private int soldierTotal;
     private Dictionary<int, int> soldierCounts = new Dictionary<int, int>();
+
     void Start()
     {
-        
+        Text.color = Color.gray;
     }
 
     // Update is called once per frame
@@ -50,28 +51,52 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
         Bounds bounds = cylinderRenderer.bounds;
         Vector3 spawnPosition = bounds.center + Vector3.up * bounds.extents.y;
 
-        // 循环创建 count 个 cube 方块
-        for (int i = 0; i < count; i++)
-        {
-            // 创建一个新的 cube 方块
-            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.localScale = new Vector3(10, 10, 10);
-            cube.GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Side" + side);
+        // 调用TrayController.RemoveSoldier获取cube
+        List<GameObject> cubes = TrayController.Instance.RemoveSoldier(side, count);
+
+        foreach (GameObject cube in cubes)
+        {            
+            // 移除 Rigidbody 组件
+            Rigidbody rb = cube.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.useGravity = false;
+                rb.isKinematic = true;
+            }
             
             // 简单排列 cube 方块，避免重叠
             if (!soldierCounts.ContainsKey(side))
             {
                 soldierCounts[side] = 0;
             }
-            float angle = 2 * Mathf.PI * (i + soldierTotal) / 12;
+            float angle = 2 * Mathf.PI * soldierTotal / 12;
             soldierCounts[side]++;
             soldierTotal++;
             float radius = bounds.extents.x * 0.8f; // 使用 Cylinder 半径的 80% 作为排列半径
-            Vector3 offset = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
+            Vector3 offset = new Vector3(Mathf.Cos(angle), 1, Mathf.Sin(angle)) * radius;
             cube.transform.position = spawnPosition + offset;
-            
+            cube.transform.rotation = Quaternion.Euler(Vector3.zero);
+
             // 让 cube 方块作为当前对象的子对象
             cube.transform.SetParent(cylinder.transform);
+            cube.transform.localScale = new Vector3(0.2f, 0.5f, 0.2f);
+        }
+
+        // 根据士兵数量设置Text颜色
+        int side1Count = soldierCounts.ContainsKey(1) ? soldierCounts[1] : 0;
+        int side2Count = soldierCounts.ContainsKey(2) ? soldierCounts[2] : 0;
+
+        if (side1Count > side2Count)
+        {
+            Text.color = Color.blue;
+        }
+        else if (side2Count > side1Count)
+        {
+            Text.color = Color.red;
+        }
+        else
+        {
+            Text.color = Color.gray;
         }
     }
 }

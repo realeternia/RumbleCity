@@ -20,10 +20,10 @@ public class DataManager
     {
         try
         {
-            string filePath = Application.dataPath + "/Resources/Datas/cityname.txt";
-            if (File.Exists(filePath))
+            TextAsset textAsset = Resources.Load<TextAsset>("Datas/cityname");
+            if (textAsset != null)
             {
-                string[] lines = File.ReadAllLines(filePath, System.Text.Encoding.UTF8);
+                string[] lines = textAsset.text.Split(new [] {"\r\n", "\r", "\n"}, System.StringSplitOptions.RemoveEmptyEntries);
                 foreach (string line in lines)
                 {
                     string[] words = line.Split('\t');
@@ -33,7 +33,7 @@ public class DataManager
             }
             else
             {
-                Debug.LogError("未找到 citiname.txt 文件，请检查路径：" + filePath);
+                Debug.LogError("未找到 citiname.txt 文件，请检查路径。");
             }
         }
         catch (System.Exception e)
