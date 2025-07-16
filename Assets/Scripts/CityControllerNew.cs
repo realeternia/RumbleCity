@@ -54,6 +54,9 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
         // 调用TrayController.RemoveSoldier获取cube
         List<GameObject> cubes = TrayController.Instance.RemoveSoldier(side, count);
 
+        if(cubes.Count == 0)
+            return;
+
         foreach (GameObject cube in cubes)
         {            
             // 移除 Rigidbody 组件
@@ -73,7 +76,7 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
             soldierCounts[side]++;
             soldierTotal++;
             float radius = bounds.extents.x * 0.8f; // 使用 Cylinder 半径的 80% 作为排列半径
-            Vector3 offset = new Vector3(Mathf.Cos(angle), 1, Mathf.Sin(angle)) * radius;
+            Vector3 offset = new Vector3(Mathf.Cos(angle), 0.3f, Mathf.Sin(angle)) * radius;
             cube.transform.position = spawnPosition + offset;
             cube.transform.rotation = Quaternion.Euler(Vector3.zero);
 
@@ -98,5 +101,30 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
         {
             Text.color = Color.gray;
         }
+
+        StartCoroutine(FlashAndShrink(cylinder, Text.color, 2f));
+        SceneController.Instance.PlaySound("Sounds/wood");
+    }
+
+    IEnumerator FlashAndShrink(GameObject target, Color color, float duration)
+    {
+        float elapsed = 0f;
+        Vector3 originalScale = target.transform.localScale;
+        Color originalColor = target.GetComponent<MeshRenderer>().material.color;
+        target.GetComponent<MeshRenderer>().material.SetFloat("_BlendMode", 0.5f);
+
+        while (elapsed < duration)
+        {
+            float t = Mathf.PingPong(elapsed * 4f, 1f);
+            target.transform.localScale = originalScale * (0.9f + 0.1f * t);
+            target.GetComponent<MeshRenderer>().material.color = Color.Lerp(originalColor, color, t);
+            
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        
+        target.transform.localScale = originalScale;
+        target.GetComponent<MeshRenderer>().material.SetFloat("_BlendMode", 0);
+        target.GetComponent<MeshRenderer>().material.color = originalColor;
     }
 }

@@ -31,7 +31,7 @@ public class TrayController : MonoBehaviour
                 Vector3 trayPosition = Tray != null ? Tray.transform.position : Vector3.zero;
                 float randomX = Random.Range(-30f, 30f);
                 float randomZ = Random.Range(-30f, 30f);
-                float randomY = Random.Range(50f, 150f);
+                float randomY = Random.Range(20f, 50f);
                 cube.transform.position = new Vector3(trayPosition.x + randomX, trayPosition.y + randomY, trayPosition.z + randomZ);
                 
                 // 开启物理
