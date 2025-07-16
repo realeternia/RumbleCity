@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class PlayerData
 {
+    public string Name;
+
     public int Sword; //完成顺位
 
     public int Mark;
+
+    public bool IsAI;
+
+    public Color Color;
 }

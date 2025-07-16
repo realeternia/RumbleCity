@@ -14,12 +14,12 @@ public class TrayController : MonoBehaviour
         Instance = this;
         int soldilerCount = 18;
         // 初始化各side的方块数量为soldilerCount
-        for (int side = 1; side <= 2; side++)
+        for (int side = 1; side <= PlayerManager.Instance.playerCount; side++)
         {
             sideCubeCounts[side] = soldilerCount;
         }
 
-        for (int side = 1; side <= 2; side++)
+        for (int side = 1; side <= PlayerManager.Instance.playerCount; side++)
         {
             for (int i = 0; i < soldilerCount; i++)
             {

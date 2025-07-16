@@ -26,11 +26,11 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
     {
         CityID = cityId;
         soldierTotal = 0;
-        soldierCounts.Clear();
-        soldierCounts[1] = 0;
-        soldierCounts[2] = 0;
-       // AddSoldierHelp(Vector3.zero, 1, 1);
-       // AddSoldierHelp(Vector3.zero, 2, 1);
+        for(int side = 1; side <= PlayerManager.Instance.playerCount; side++)
+            soldierCounts[side] = 0;
+        // AddSoldierHelp(Vector3.zero, 1, 1);
+        // AddSoldierHelp(Vector3.zero, 2, 1);
+        // AddSoldierHelp(Vector3.zero, 3, 1);
         if(!string.IsNullOrEmpty(cityName))
             Text.text = cityName;
     }
@@ -90,16 +90,26 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
         }
 
         // 根据士兵数量设置Text颜色
-        int side1Count = soldierCounts.ContainsKey(1) ? soldierCounts[1] : 0;
-        int side2Count = soldierCounts.ContainsKey(2) ? soldierCounts[2] : 0;
-
-        if (side1Count > side2Count)
+        int maxCount = 0;
+        List<int> maxSides = new List<int>();
+        
+        foreach (var pair in soldierCounts)
         {
-            Text.color = Color.blue;
+            if (pair.Value > maxCount)
+            {
+                maxCount = pair.Value;
+                maxSides.Clear();
+                maxSides.Add(pair.Key);
+            }
+            else if (pair.Value == maxCount)
+            {
+                maxSides.Add(pair.Key);
+            }
         }
-        else if (side2Count > side1Count)
+
+        if (maxSides.Count == 1)
         {
-            Text.color = Color.red;
+            Text.color = PlayerManager.Instance.GetPlayerData(maxSides[0]).Color;
         }
         else
         {
@@ -171,29 +181,14 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
             // 让 cube 方块作为当前对象的子对象
             cube.transform.SetParent(cylinder.transform);
         }
-
-        // if (side == 1)
-        // {
-        //     Text.color = Color.blue;
-        // }
-        // else if (side == 2)
-        // {
-        //     Text.color = Color.red;
-        // }
-
-       // StartCoroutine(FlashAndShrink(cylinder, Text.color, 1f));
     }
 
     public void FlashAndShrink(int side)
     {
         gameObject.GetComponent<MeshRenderer>().material.SetFloat("_BlendMode", 0);
-        if (side == 1)
+        if (side != 0)
         {
-            Text.color = Color.blue;
-        }
-        else if (side == 2)
-        {
-            Text.color = Color.red;
+            Text.color = PlayerManager.Instance.GetPlayerData(side).Color;
         }
         else
         {
@@ -223,5 +218,17 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
         target.transform.localScale = originalScale;
         target.GetComponent<MeshRenderer>().material.SetFloat("_BlendMode", 0);
         target.GetComponent<MeshRenderer>().material.color = originalColor;
+    }
+
+    public bool NoSoldier()
+    {
+        foreach(var sold in soldierCounts)
+        {
+            if(sold.Value > 0)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }

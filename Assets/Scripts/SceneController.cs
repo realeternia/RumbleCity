@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // 引入 TextMeshPro 命名空间
+using TMPro;
+using System.Linq; // 引入 TextMeshPro 命名空间
 
 public class SceneController : MonoBehaviour
 {
@@ -11,18 +12,14 @@ public class SceneController : MonoBehaviour
     public GameObject[] Cities;
     public Material[] CitySkins; // 新增 CitySkins 数组
     private bool[,] connectivityMap = new bool[15, 15]; // 保存城市连通关系的二维数组
-    private List<GameObject> roadCubes = new List<GameObject>();
 
     public Button RollButton;
     public Button[] CheckButtons;
     public GameObject DiceGObj;
 
-    private PlayerData pRed = new PlayerData();
-    private PlayerData pBlue = new PlayerData();
     private int swordLeft = 4;
 
-    public TMPro.TMP_Text RedText;
-    public TMPro.TMP_Text BlueText;
+    public TMPro.TMP_Text[] FinalMarkText;
 
     void Start()
     {
@@ -197,15 +194,15 @@ public class SceneController : MonoBehaviour
 
     public void RoundEnd()
     {
-        CheckTurn(1);
+        CheckTurn();
     }
 
-    private void RollDiceAndProcessResults(DiceGroup diceGroup)
+    private void RollDiceAndProcessResults(int side, DiceGroup diceGroup)
     {
         diceGroup.RollTheDice((diceResults) => {
             if (diceResults.Contains(0))
             {
-                RollDiceAndProcessResults(diceGroup);
+                RollDiceAndProcessResults(side, diceGroup);
             }
             else
             {
@@ -220,32 +217,55 @@ public class SceneController : MonoBehaviour
                     int cityId = diceResults[randomIndex1] + diceResults[randomIndex2];
                     int count = diceResults[indices[0]];
 
-                    AddSoldier(cityId, 2, (count + 1) / 2);
+                    AddSoldier(cityId, side, (count + 1) / 2);
 
-                    CheckTurn(0);
+                    CheckTurn();
                 }
             }
         });
     }
 
-    private void CheckTurn(int turn)
+    private void CheckTurn()
     {
-        if(pRed.Sword > 0 && pBlue.Sword > 0)
+        if(PlayerManager.Instance.IsAllFinish())
         {
             StartCoroutine(CalculateCityScores());
             return;
         }
 
-        if (turn == 0)
+        int turn = PlayerManager.Instance.GetTurn();
+        var nowPlayer = PlayerManager.Instance.GetPlayerData(turn + 1);
+
+        if(TrayController.Instance.GetSoldierLeft(turn + 1) == 0)
         {
-            if(TrayController.Instance.GetSoldierLeft(turn + 1) == 0)
+            if (nowPlayer.Sword == 0)
             {
-                if (pBlue.Sword == 0)
-                {
-                    pBlue.Sword = swordLeft;
-                    swordLeft--;
-                }
-                CheckTurn(1);
+                nowPlayer.Sword = swordLeft;
+                swordLeft--;
+            }
+            
+        }
+
+        // 隐藏所有CheckButtons
+        foreach (var button in CheckButtons)
+        {
+            if (button != null)
+            {
+                button.gameObject.SetActive(false);
+            }
+        }
+
+        PlayerManager.Instance.NextTurn();
+        turn = PlayerManager.Instance.GetTurn();
+        nowPlayer = PlayerManager.Instance.GetPlayerData(turn + 1);
+
+        if(TrayController.Instance.GetSoldierLeft(turn + 1) > 0)
+        {
+            if(nowPlayer.IsAI)
+            {
+                DiceGroup diceGroup = DiceGObj.GetComponent<DiceGroup>();
+                RollDiceAndProcessResults(turn + 1, diceGroup);
+
             }
             else
             {
@@ -254,33 +274,7 @@ public class SceneController : MonoBehaviour
         }
         else
         {
-            // 隐藏所有CheckButtons
-            foreach (var button in CheckButtons)
-            {
-                if (button != null)
-                {
-                    button.gameObject.SetActive(false);
-                }
-            }
-
-            if(TrayController.Instance.GetSoldierLeft(turn + 1) == 0)
-            {                
-                if (pRed.Sword == 0)
-                {
-                    pRed.Sword = swordLeft;
-                    swordLeft--;
-                }
-                CheckTurn(0);
-            }
-            else
-            {
-                DiceGroup diceGroup = DiceGObj.GetComponent<DiceGroup>();
-                if (diceGroup != null)
-                { //ai进行中
-                    RollDiceAndProcessResults(diceGroup);
-                }
-            }            
-
+            CheckTurn();
         }
     }
 
@@ -338,20 +332,20 @@ public class SceneController : MonoBehaviour
 
     private IEnumerator CalculateCityScores()
     {
-        RedText.gameObject.SetActive(true);
-        BlueText.gameObject.SetActive(true);
+        for (int i = 0; i < FinalMarkText.Length; i++)
+        {
+            FinalMarkText[i].gameObject.SetActive(true);
+            var player = PlayerManager.Instance.GetPlayerData(i + 1);
 
-        RedText.text = "红方: " + pRed.Sword;
-        BlueText.text = "蓝方: " + pBlue.Sword;
+            FinalMarkText[i].text = player.Name + " 得分: " + player.Sword;
+            FinalMarkText[i].color = player.Color;
+        }
 
         for (int cityId = 2; cityId <= 12; cityId++)
         {
             var cityController = FindCityById(cityId);
-             // 获取士兵数量
-            int blueSoldiers = cityController.soldierCounts.ContainsKey(1) ? cityController.soldierCounts[1] : 0;
-            int redSoldiers = cityController.soldierCounts.ContainsKey(2) ? cityController.soldierCounts[2] : 0;
 
-            if(redSoldiers == 0 && blueSoldiers == 0)
+            if(cityController.NoSoldier())
             {
                 cityController.FlashAndShrink(0);
                 yield return new WaitForSeconds(2f);
@@ -359,39 +353,42 @@ public class SceneController : MonoBehaviour
             }
 
             int winSide = 0;
-            if (redSoldiers < blueSoldiers)
+        // 过滤掉 count 为 0 的项并排序
+            var sortedPlayers = new List<KeyValuePair<int, PlayerData>>();
+            foreach (var kv in cityController.soldierCounts)
             {
-                pBlue.Mark += cityController.CityID;
-                if(redSoldiers > 0)
-                    pRed.Mark += cityController.CityID / 2;
-                winSide = 1;
-            }
-            else if (blueSoldiers < redSoldiers)
-            {
-                pRed.Mark += cityController.CityID;
-                if(blueSoldiers > 0)
-                    pBlue.Mark += cityController.CityID / 2;
-                winSide = 2;
-            }
-            else
-            {
-                // 平局，比较 Sword 数量
-                if (pRed.Sword > pBlue.Sword)
+                if (kv.Value > 0)
                 {
-                    pRed.Mark += cityController.CityID;
-                    if(blueSoldiers > 0)
-                        pBlue.Mark += cityController.CityID / 2;
-                    winSide = 2;
+                    PlayerData playerData = PlayerManager.Instance.GetPlayerData(kv.Key);
+                    sortedPlayers.Add(new KeyValuePair<int, PlayerData>(kv.Key, playerData));
                 }
-                else if (pBlue.Sword > pRed.Sword)
-                {
-                    pBlue.Mark += cityController.CityID;
-                    if(redSoldiers > 0)
-                        pRed.Mark += cityController.CityID / 2;
-                    winSide = 1;
-                }
-                // 若 Sword 也相同则不加分
             }
+
+            Debug.Log("city " + cityController.CityID);
+
+            foreach (var entry in cityController.soldierCounts)
+            {
+                Debug.Log($"Key: {entry.Key}, Value: {entry.Value}");
+            }
+
+            sortedPlayers = sortedPlayers.OrderByDescending(kv => cityController.soldierCounts[kv.Key])
+                                       .ThenByDescending(kv => kv.Value.Sword)
+                                       .ToList();
+
+            foreach (var entry in sortedPlayers)
+            {
+                Debug.Log($"After Key: {entry.Key}, Name: {entry.Value.Name}, Value: {entry.Value.Mark}");
+            }
+
+            if (sortedPlayers.Count >= 1)
+            {
+                sortedPlayers[0].Value.Mark += cityController.CityID;
+                winSide = sortedPlayers[0].Key;
+            }
+            Debug.Log("winSide " + winSide);
+            if (sortedPlayers.Count >= 2)
+                sortedPlayers[1].Value.Mark += cityController.CityID / 2;
+
             cityController.FlashAndShrink(winSide);
             SceneController.Instance.PlaySound("Sounds/sword");
             // 遍历联通的城市，派遣援军
@@ -401,25 +398,28 @@ public class SceneController : MonoBehaviour
                 {
                     Debug.Log($"城市{cityId}和城市{otherCityId}直接联通");
                     var targetCity = FindCityById(otherCityId);
-                    int otherBlueSoldiers = targetCity.soldierCounts.ContainsKey(1) ? targetCity.soldierCounts[1] : 0;
-                    int otherRedSoldiers = targetCity.soldierCounts.ContainsKey(2) ? targetCity.soldierCounts[2] : 0;
-                    
-                    if (otherBlueSoldiers > 0 && otherRedSoldiers > 0)
+                    int winSideSoldiers = targetCity.soldierCounts.ContainsKey(winSide) ? targetCity.soldierCounts[winSide] : 0;
+                    int nonZeroCount = 0;
+                    foreach (var count in targetCity.soldierCounts.Values)
                     {
-                        if(winSide == 1)
-                            targetCity.AddSoldierHelp(cityController.GetCenterPos(), 1, 2);
-                        else
-                            targetCity.AddSoldierHelp(cityController.GetCenterPos(), 2, 2);
+                        if (count > 0)
+                            nonZeroCount++;
                     }
+                    
+                    if (nonZeroCount > 1 && winSideSoldiers > 0)
+                        targetCity.AddSoldierHelp(cityController.GetCenterPos(), winSide, 2); //派遣2个志愿士兵
                 }
             }
 
-            // 更新显示
-            RedText.text = "红方: " + pRed.Sword + "+" + pRed.Mark;
-            BlueText.text = "蓝方: " + pBlue.Sword + "+" + pBlue.Mark;
+            for (int i = 0; i < FinalMarkText.Length; i++)
+            {
+                var player = PlayerManager.Instance.GetPlayerData(i + 1);
+                FinalMarkText[i].text = player.Name + " 得分: " + player.Sword + "+" + player.Mark;
+            }
             
             yield return new WaitForSeconds(3f);
         }
     }
 
 }
+                 
