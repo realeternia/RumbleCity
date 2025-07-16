@@ -12,15 +12,16 @@ public class TrayController : MonoBehaviour
     void Start()
     {
         Instance = this;
-        // 初始化各side的方块数量为18
+        int soldilerCount = 18;
+        // 初始化各side的方块数量为soldilerCount
         for (int side = 1; side <= 2; side++)
         {
-            sideCubeCounts[side] = 18;
+            sideCubeCounts[side] = soldilerCount;
         }
 
         for (int side = 1; side <= 2; side++)
         {
-            for (int i = 0; i < 18; i++)
+            for (int i = 0; i < soldilerCount; i++)
             {
                 GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 cube.transform.localScale = new Vector3(10, 3, 10);

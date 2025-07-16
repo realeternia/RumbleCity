@@ -65,6 +65,7 @@
     <Compile Include="Assets\Scripts\ActionWork.cs" />
     <Compile Include="Assets\Scripts\DataManager.cs" />
     <Compile Include="Assets\Scripts\TrayController.cs" />
+    <Compile Include="Assets\Scripts\PlayerData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -1109,3 +1110,4 @@
   </Target>
   -->
 </Project>
+
