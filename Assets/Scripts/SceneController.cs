@@ -197,18 +197,22 @@ public class SceneController : MonoBehaviour
         CheckTurn();
     }
 
-    private void RollDiceAndProcessResults(int side, DiceGroup diceGroup)
+    private void AIRollDiceAndProcessResults(int side, DiceGroup diceGroup)
     {
         diceGroup.RollTheDice((diceResults) => {
             if (diceResults.Contains(0))
             {
-                RollDiceAndProcessResults(side, diceGroup);
+                AIRollDiceAndProcessResults(side, diceGroup);
             }
             else
             {
+                var playerData = PlayerManager.Instance.GetPlayerData(side);
+
                 // 随机选择2个数相加作为cityId，另一个数作为count
-                if (diceResults.Count >= 3)
+                if (diceResults.Count >= 3 && (Random.Range(1, 100) > playerData.GreedRate))
                 {
+                    Debug.Log("try random");
+
                     List<int> indices = new List<int> { 0, 1, 2 };
                     int randomIndex1 = indices[Random.Range(0, indices.Count)];
                     indices.Remove(randomIndex1);
@@ -218,11 +222,122 @@ public class SceneController : MonoBehaviour
                     int count = diceResults[indices[0]];
 
                     AddSoldier(cityId, side, (count + 1) / 2);
-
-                    CheckTurn();
                 }
+                else
+                {
+                    var mark1 = TryCalculateMarkTotal(side, diceResults[0] + diceResults[1], diceResults[2]);
+                    var mark2 = TryCalculateMarkTotal(side, diceResults[0] + diceResults[2], diceResults[1]);
+                    var mark3 = TryCalculateMarkTotal(side, diceResults[2] + diceResults[1], diceResults[0]);
+                    Debug.Log("try" + diceResults[0] + diceResults[1] + "=" + mark1);
+                    Debug.Log("try" + diceResults[0] + diceResults[2] + "=" + mark2);
+                    Debug.Log("try" + diceResults[1] + diceResults[2] + "=" + mark3);
+
+                    if (mark1 > mark2 && mark1 >= mark3)
+                    {
+                        AddSoldier(diceResults[0] + diceResults[1], side, (diceResults[2] + 1) / 2);
+                    }
+                    else if (mark2 > mark1 && mark2 >= mark3)
+                    {
+                        AddSoldier(diceResults[0] + diceResults[2], side, (diceResults[1] + 1) / 2);
+                    }
+                    else if (mark3 > mark1 && mark3 >= mark2)
+                    {
+                        AddSoldier(diceResults[1] + diceResults[2], side, (diceResults[0] + 1) / 2);
+                    }
+                    else
+                    {
+                        // 计算三种组合的 cityId
+                        int cityId1 = diceResults[0] + diceResults[1];
+                        int cityId2 = diceResults[0] + diceResults[2];
+                        int cityId3 = diceResults[1] + diceResults[2];
+
+                        // 找出最小的 cityId
+                        int minCityId = Mathf.Min(cityId1, Mathf.Min(cityId2, cityId3));
+
+                        // 根据最小的 cityId 确定对应的 count
+                        int count;
+                        if (minCityId == cityId1)
+                        {
+                            count = diceResults[2];
+                        }
+                        else if (minCityId == cityId2)
+                        {
+                            count = diceResults[1];
+                        }
+                        else
+                        {
+                            count = diceResults[0];
+                        }
+
+                        // 调用 AddSoldier 方法
+                        AddSoldier(minCityId, side, (count + 1) / 2);
+                    }
+                }
+                CheckTurn();
             }
         });
+    }
+
+    private int TryCalculateMarkTotal(int side, int tryCityId, int tryCityCount)
+    {
+        int mark = 0;
+        Dictionary<int, Dictionary<int, int>> helpCcount = new Dictionary<int, Dictionary<int, int>>(); // city / side / help
+        for (int i = 2; i <= 12; i++)
+        {
+            helpCcount[i] = new Dictionary<int, int>();
+            for (int j = 1; j <= PlayerManager.Instance.playerCount; j++)
+                helpCcount[i][j] = 0;
+        }
+        helpCcount[tryCityId][side] = tryCityCount;
+        for (int cityId = 2; cityId <= 12; cityId++)
+        {
+            var cityController = FindCityById(cityId);
+            var sortedPlayers = new List<KeyValuePair<int, PlayerData>>();
+            foreach (var kv in cityController.soldierCounts)
+            {
+                if (kv.Value > 0 || helpCcount[cityId][kv.Key] > 0)
+                {
+                    PlayerData playerData = PlayerManager.Instance.GetPlayerData(kv.Key);
+                    sortedPlayers.Add(new KeyValuePair<int, PlayerData>(kv.Key, playerData));
+                }
+            }
+
+            if(sortedPlayers.Count == 0)
+                continue;
+
+            sortedPlayers = sortedPlayers.OrderByDescending(kv => cityController.soldierCounts[kv.Key] + helpCcount[cityId][kv.Key])
+                                       .ThenByDescending(kv => kv.Value.Sword)
+                                       .ToList();
+
+            if (sortedPlayers.Count >= 1 && sortedPlayers[0].Key == side)
+            {
+                mark += cityId;
+            }
+            else if (sortedPlayers.Count >= 2 && sortedPlayers[1].Key == side)
+            {
+                mark += cityId / 2;
+            }
+
+            int winSide = sortedPlayers[0].Key;
+            for (int otherCityId = 2; otherCityId <= 12; otherCityId++)
+            {
+                if (otherCityId > cityId && IsDirectlyConnected(cityId - 2, otherCityId - 2))
+                {
+                    var targetCity = FindCityById(otherCityId);
+                    int winSideSoldiers = targetCity.soldierCounts.ContainsKey(winSide) ? targetCity.soldierCounts[winSide] : 0;
+                    int nonZeroCount = 0;
+                    foreach (var count in targetCity.soldierCounts.Values)
+                    {
+                        if (count > 0)
+                            nonZeroCount++;
+                    }
+                    
+                    if (nonZeroCount > 1 && winSideSoldiers > 0)
+                        helpCcount[otherCityId][winSide] += 2;
+                }
+            }
+        }
+        return mark;
     }
 
     private void CheckTurn()
@@ -264,7 +379,7 @@ public class SceneController : MonoBehaviour
             if(nowPlayer.IsAI)
             {
                 DiceGroup diceGroup = DiceGObj.GetComponent<DiceGroup>();
-                RollDiceAndProcessResults(turn + 1, diceGroup);
+                AIRollDiceAndProcessResults(turn + 1, diceGroup);
 
             }
             else
@@ -362,13 +477,6 @@ public class SceneController : MonoBehaviour
                     PlayerData playerData = PlayerManager.Instance.GetPlayerData(kv.Key);
                     sortedPlayers.Add(new KeyValuePair<int, PlayerData>(kv.Key, playerData));
                 }
-            }
-
-            Debug.Log("city " + cityController.CityID);
-
-            foreach (var entry in cityController.soldierCounts)
-            {
-                Debug.Log($"Key: {entry.Key}, Value: {entry.Value}");
             }
 
             sortedPlayers = sortedPlayers.OrderByDescending(kv => cityController.soldierCounts[kv.Key])

@@ -13,4 +13,6 @@ public class PlayerData
     public bool IsAI;
 
     public Color Color;
+
+    public int GreedRate; //100最聪明
 }

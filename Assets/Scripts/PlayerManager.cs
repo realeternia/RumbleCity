@@ -21,8 +21,8 @@ public class PlayerManager
     public void Init()
     {
         playerList.Add(new PlayerData { Name = "旺仔", IsAI = false, Color = Color.blue });
-        playerList.Add(new PlayerData { Name = "甲鱼", IsAI = true, Color = Color.red });
-        playerList.Add(new PlayerData { Name = "牛肉", IsAI = true, Color = Color.green });
+        playerList.Add(new PlayerData { Name = "甲鱼", IsAI = true, Color = Color.red, GreedRate = 85 });
+        playerList.Add(new PlayerData { Name = "八戒", IsAI = true, Color = Color.green, GreedRate = 40 });
     }
 
     public bool IsAllFinish()
