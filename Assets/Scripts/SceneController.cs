@@ -463,7 +463,7 @@ public class SceneController : MonoBehaviour
 
             if(cityController.NoSoldier())
             {
-                cityController.FlashAndShrink(0);
+                cityController.FlashAndShrinkCity(0);
                 yield return new WaitForSeconds(2f);
                 continue;
             }
@@ -498,7 +498,7 @@ public class SceneController : MonoBehaviour
             if (sortedPlayers.Count >= 2)
                 sortedPlayers[1].Value.Mark += cityController.CityID / 2;
 
-            cityController.FlashAndShrink(winSide);
+            cityController.FlashAndShrinkCity(winSide);
             SceneController.Instance.PlaySound("Sounds/sword");
             // 遍历联通的城市，派遣援军
             for (int otherCityId = 2; otherCityId <= 12; otherCityId++)

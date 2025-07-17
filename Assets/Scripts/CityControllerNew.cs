@@ -116,7 +116,12 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
             Text.color = Color.gray;
         }
 
-        StartCoroutine(FlashAndShrink(cylinder, Text.color, 2f));
+        foreach(var cube in cubes)
+        {
+            StartCoroutine(ShrinkObj(cube, 2f));
+        }
+
+        StartCoroutine(FlashObj(cylinder, Text.color, 2f));
         SceneController.Instance.PlaySound("Sounds/wood");
     }
 
@@ -183,7 +188,7 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void FlashAndShrink(int side)
+    public void FlashAndShrinkCity(int side)
     {
         gameObject.GetComponent<MeshRenderer>().material.SetFloat("_BlendMode", 0);
         if (side != 0)
@@ -195,30 +200,43 @@ public class CityControllerNew : MonoBehaviour, IPointerClickHandler
             Text.color = Color.gray;
         }
         GameObject cylinder = gameObject;
-        StartCoroutine(FlashAndShrink(cylinder, Text.color, 2f));
+        StartCoroutine(FlashObj(cylinder, Text.color, 2f));
     }
 
-    IEnumerator FlashAndShrink(GameObject target, Color color, float duration)
+    IEnumerator FlashObj(GameObject target, Color color, float duration)
     {
         float elapsed = 0f;
-        Vector3 originalScale = target.transform.localScale;
         Color originalColor = target.GetComponent<MeshRenderer>().material.color;
         target.GetComponent<MeshRenderer>().material.SetFloat("_BlendMode", 0.5f);
 
         while (elapsed < duration)
         {
             float t = Mathf.PingPong(elapsed * 4f, 1f);
-            target.transform.localScale = originalScale * (0.9f + 0.1f * t);
             target.GetComponent<MeshRenderer>().material.color = Color.Lerp(originalColor, color, t);
             
             elapsed += Time.deltaTime;
             yield return null;
         }
         
-        target.transform.localScale = originalScale;
         target.GetComponent<MeshRenderer>().material.SetFloat("_BlendMode", 0);
         target.GetComponent<MeshRenderer>().material.color = originalColor;
     }
+
+    IEnumerator ShrinkObj(GameObject target, float duration)
+    {
+        float elapsed = 0f;
+        Vector3 originalScale = target.transform.localScale;
+        while (elapsed < duration)
+        {
+            float t = Mathf.PingPong(elapsed * 4f, 1f);
+            target.transform.localScale = originalScale * (0.9f + 0.3f * t);
+            
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        
+        target.transform.localScale = originalScale;
+    }    
 
     public bool NoSoldier()
     {
