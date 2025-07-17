@@ -19,7 +19,7 @@ public class SceneController : MonoBehaviour
 
     private int swordLeft = 4;
 
-    public TMPro.TMP_Text[] FinalMarkText;
+    public TMP_Text[] FinalMarkText;
 
     void Start()
     {
@@ -78,6 +78,12 @@ public class SceneController : MonoBehaviour
 
         InitRoad();
         RollButton.onClick.AddListener(OnRollButtonClick);
+
+        for (int i = 0; i < FinalMarkText.Length; i++)
+        {
+            var player = PlayerManager.Instance.GetPlayerData(i + 1);
+            FinalMarkText[i].text = player.Name;
+        }
     }
 
     private void InitRoad()
@@ -141,6 +147,12 @@ public class SceneController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        int turn = PlayerManager.Instance.GetTurn();
+        var nowPlayer = PlayerManager.Instance.GetPlayerData(turn + 1);
+        Color color = nowPlayer.Color;
+        float rate = Mathf.PingPong(Time.time /2, 1f);
+        color = Color.Lerp(color, Color.white, rate);
+        FinalMarkText[turn].color = color;
     }
 
     private void OnRollButtonClick()
@@ -166,6 +178,7 @@ public class SceneController : MonoBehaviour
                     }
 
                     HashSet<(int, int)> usedParams = new HashSet<(int, int)>();
+                    int turn = PlayerManager.Instance.GetTurn();
                     for (int i = 0; i < Mathf.Min(CheckButtons.Length, paramPairs.Count); i++)
                     {
                         Button button = CheckButtons[i];
@@ -182,10 +195,12 @@ public class SceneController : MonoBehaviour
                                 ActionWork actionWork = button.GetComponent<ActionWork>();
                                 if (actionWork != null)
                                 {
-                                    actionWork.SetData(paramPair.Item1, paramPair.Item2);
+                                    actionWork.SetData(paramPair.Item1, turn + 1, paramPair.Item2);
                                 }
                                 usedParams.Add(paramPair);
                             }
+
+                            MoveButtonToCity(button, paramPair.Item1);
                         }
                     }
                 }
@@ -359,7 +374,6 @@ public class SceneController : MonoBehaviour
                 nowPlayer.Sword = swordLeft;
                 swordLeft--;
             }
-            
         }
 
         // 隐藏所有CheckButtons
@@ -371,6 +385,7 @@ public class SceneController : MonoBehaviour
             }
         }
 
+
         PlayerManager.Instance.NextTurn();
         turn = PlayerManager.Instance.GetTurn();
         nowPlayer = PlayerManager.Instance.GetPlayerData(turn + 1);
@@ -381,11 +396,17 @@ public class SceneController : MonoBehaviour
             {
                 DiceGroup diceGroup = DiceGObj.GetComponent<DiceGroup>();
                 AIRollDiceAndProcessResults(turn + 1, diceGroup);
-
             }
             else
             {
                 RollButton.gameObject.SetActive(true);
+
+                // 移动RollButton到对应FinalMarkText
+                if (FinalMarkText.Length > turn && FinalMarkText[turn] != null && RollButton != null)
+                {
+                    Vector3 textPos = FinalMarkText[turn].transform.position;
+                    RollButton.transform.position = textPos + new Vector3(0, -100, 0);
+                }
             }
         }
         else
@@ -393,7 +414,7 @@ public class SceneController : MonoBehaviour
             CheckTurn();
         }
     }
-
+ 
     public void AddSoldier(int cityId, int side, int count)
     {
         foreach (var city in Cities)
@@ -444,6 +465,17 @@ public class SceneController : MonoBehaviour
             }
         }
         return null;
+    }
+
+    public void MoveButtonToCity(Button button, int cityId)
+    {
+        var cityController = FindCityById(cityId);
+        if (cityController != null && button != null)
+        {
+            Vector3 worldPos = cityController.gameObject.transform.position;
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+            button.transform.position = screenPos + new Vector3(0, 85, 0);
+        }
     }
 
     private IEnumerator CalculateCityScores()

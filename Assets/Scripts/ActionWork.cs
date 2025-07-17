@@ -9,6 +9,8 @@ public class ActionWork : MonoBehaviour
     public int DestId;
     public int ManCount;
 
+    private int sideId;
+
     void Start()
     {
         var button = GetComponent<Button>();
@@ -23,12 +25,13 @@ public class ActionWork : MonoBehaviour
         
     }
 
-    public void SetData(int did, int count)
+    public void SetData(int cityId, int side, int count)
     {
-        DestId = did;
+        DestId = cityId;
         ManCount = count;
+        sideId = side;
 
-        transform.Find("Text (TMP)").GetComponent<TMP_Text>().text = ((ManCount+1) / 2).ToString() + "士兵->" + DestId.ToString();
+        transform.Find("Text (TMP)").GetComponent<TMP_Text>().text = "+" + ((ManCount+1) / 2).ToString();
     }
 
     private void OnButtonClick()
@@ -36,7 +39,7 @@ public class ActionWork : MonoBehaviour
         if(DestId <= 0)
             return;
 
-        SceneController.Instance.AddSoldier(DestId, 1, (ManCount+1) / 2);
+        SceneController.Instance.AddSoldier(DestId, sideId, (ManCount+1) / 2);
         SceneController.Instance.RoundEnd();
         DestId = 0; // 防止连点
     }

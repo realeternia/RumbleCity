@@ -67,9 +67,9 @@ public class DiceGroup : MonoBehaviour
                 // 根据骰子旋转方向判定点数，此处简单模拟，实际需根据需求实现
                 Vector3 rot = dice.transform.rotation.eulerAngles;
                 var diceValue = 0;
-                if (distanceInRange((int)rot.x, 90, 25)) {
+                if (distanceInRange((int)rot.x, 90, 30)) {
                     diceValue = 6; //6
-                } else if (distanceInRange((int)rot.x, 270, 25)) {
+                } else if (distanceInRange((int)rot.x, 270, 30)) {
                     diceValue = 1; //1
                 } else if (distanceInRange((int)rot.x, -180, 25) && distanceInRange((int)rot.z, -180, 25) ) {
                     diceValue = 4; //4
