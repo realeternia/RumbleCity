@@ -25,6 +25,7 @@ public class SceneController : MonoBehaviour
     {
         Instance = this;
         Debug.Log("cityNames " + Cities.Length + " " + CitySkins.Length);
+
         if (Cities.Length == 11 && CitySkins.Length == 11)
         {
             // 创建 CitySkins 的副本用于打乱顺序
