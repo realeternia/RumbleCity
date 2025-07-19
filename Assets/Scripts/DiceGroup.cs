@@ -29,7 +29,7 @@ public class DiceGroup : MonoBehaviour
         {
             foreach (GameObject dice in diceObject)
             {
-                if (dice != null && dice.GetComponent<Rigidbody>() != null)
+                if (dice.GetComponent<Rigidbody>() != null)
                 {
                     Rigidbody rb = dice.GetComponent<Rigidbody>();
                     
@@ -47,7 +47,6 @@ public class DiceGroup : MonoBehaviour
     }
 
     IEnumerator GetDiceCount(Action<List<int>> callback = null)
-
     {
         resultText.text = "";
         yield return new WaitForSeconds(0.5f);
@@ -57,44 +56,85 @@ public class DiceGroup : MonoBehaviour
             if (dice != null)
             {
                 Rigidbody rb = dice.GetComponent<Rigidbody>();
-                
+                int diceValue = 0;
                 // 等待骰子停止旋转并且不移动
-                while (rb != null && (rb.angularVelocity.sqrMagnitude > 0.1f || rb.velocity.sqrMagnitude > 0.1f))
+                while (true)
                 {
-                    yield return new WaitForFixedUpdate();
+                    if (rb.angularVelocity.sqrMagnitude <= 0.1f && rb.velocity.sqrMagnitude <= 0.1f)
+                    {                
+                        diceValue = GetDiceValue(dice);
+                        if (diceValue == 0)
+                        {
+                            rb.AddForce(Vector3.up * 20 * rb.mass, ForceMode.Impulse); //给一个向上的力
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    yield return new WaitForSeconds(0.1f);
                 }
-                
-                // 根据骰子旋转方向判定点数，此处简单模拟，实际需根据需求实现
-                Vector3 rot = dice.transform.rotation.eulerAngles;
-                var diceValue = 0;
-                if (distanceInRange((int)rot.x, 90, 30)) {
-                    diceValue = 6; //6
-                } else if (distanceInRange((int)rot.x, 270, 30)) {
-                    diceValue = 1; //1
-                } else if (distanceInRange((int)rot.x, -180, 25) && distanceInRange((int)rot.z, -180, 25) ) {
-                    diceValue = 4; //4
-                } else if (distanceInRange((int)rot.x, -180, 25) && distanceInRange((int)rot.z, -90, 25) ) {
-                    diceValue = 2; //2
-                } else if (distanceInRange((int)rot.x, -180, 25) && distanceInRange((int)rot.z, -270, 25) ) {
-                    diceValue = 5; //5
-               } else if (distanceInRange((int)rot.x, -180, 25) && distanceInRange((int)rot.z, 0, 25) ) {
-                    diceValue = 3; //3
-                } else if (distanceInRange((int)rot.x, 0, 25) && distanceInRange((int)rot.z, 0, 25) ) {
-                    diceValue = 4; //4
-                } else if (distanceInRange((int)rot.x, 0, 25) && distanceInRange((int)rot.z, 90, 25) ) {
-                    diceValue = 5; //5
-                } else if (distanceInRange((int)rot.x, 0, 25) && distanceInRange((int)rot.z, -90, 25) ) {
-                    diceValue = 2; //2
-               } else if (distanceInRange((int)rot.x, 0, 25) && distanceInRange((int)rot.z, 180, 25) ) {
-                    diceValue = 3; //3
-                }
-                
-                Debug.Log("骰子 " + dice.name + " 的点数是: " + diceValue + " x:" + rot.x + " z:"+ rot.z);
+
+
+
+                Debug.Log("骰子 " + dice.name + " 的点数是: " + diceValue);
                 results.Add(diceValue);
+
+                //todo 
             }
         }
         resultText.text = "点数: " + string.Join(", ", results);
         callback?.Invoke(results);
+
+    }
+
+    private int GetDiceValue(GameObject dice)
+    {
+        Vector3 rot;
+        rot = dice.transform.rotation.eulerAngles;
+        int diceValue = 0;
+        if (distanceInRange((int)rot.x, 90, 30))
+        {
+            diceValue = 6; //6
+        }
+        else if (distanceInRange((int)rot.x, 270, 30))
+        {
+            diceValue = 1; //1
+        }
+        else if (distanceInRange((int)rot.x, -180, 25) && distanceInRange((int)rot.z, -180, 25))
+        {
+            diceValue = 4; //4
+        }
+        else if (distanceInRange((int)rot.x, -180, 25) && distanceInRange((int)rot.z, -90, 25))
+        {
+            diceValue = 2; //2
+        }
+        else if (distanceInRange((int)rot.x, -180, 25) && distanceInRange((int)rot.z, -270, 25))
+        {
+            diceValue = 5; //5
+        }
+        else if (distanceInRange((int)rot.x, -180, 25) && distanceInRange((int)rot.z, 0, 25))
+        {
+            diceValue = 3; //3
+        }
+        else if (distanceInRange((int)rot.x, 0, 25) && distanceInRange((int)rot.z, 0, 25))
+        {
+            diceValue = 4; //4
+        }
+        else if (distanceInRange((int)rot.x, 0, 25) && distanceInRange((int)rot.z, 90, 25))
+        {
+            diceValue = 5; //5
+        }
+        else if (distanceInRange((int)rot.x, 0, 25) && distanceInRange((int)rot.z, -90, 25))
+        {
+            diceValue = 2; //2
+        }
+        else if (distanceInRange((int)rot.x, 0, 25) && distanceInRange((int)rot.z, 180, 25))
+        {
+            diceValue = 3; //3
+        }
+        return diceValue;
 
     }
 

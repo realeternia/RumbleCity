@@ -161,50 +161,52 @@ public class SceneController : MonoBehaviour
         if (diceGroup != null)
         {
             RollButton.gameObject.SetActive(false);
-            diceGroup.RollTheDice((diceResults) => {
-                Debug.Log("骰子滚动完成回调触发");
-                if (diceResults.Contains(0))
-                {
-                    RollButton.gameObject.SetActive(true);
-                }
-                else
-                {
-                    List<(int, int)> paramPairs = new List<(int, int)>();
-                    if (diceResults.Count >= 3)
-                    {
-                        paramPairs.Add((diceResults[0] + diceResults[1], diceResults[2]));
-                        paramPairs.Add((diceResults[0] + diceResults[2], diceResults[1]));
-                        paramPairs.Add((diceResults[1] + diceResults[2], diceResults[0]));
-                    }
+            diceGroup.RollTheDice(OnDiceRollComplete);
+        }
+    }
 
-                    HashSet<(int, int)> usedParams = new HashSet<(int, int)>();
-                    int turn = PlayerManager.Instance.GetTurn();
-                    for (int i = 0; i < Mathf.Min(CheckButtons.Length, paramPairs.Count); i++)
+    private void OnDiceRollComplete(List<int> diceResults)
+    {
+        if (diceResults.Contains(0))
+        {
+            RollButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            List<(int, int)> paramPairs = new List<(int, int)>();
+            if (diceResults.Count >= 3)
+            {
+                paramPairs.Add((diceResults[0] + diceResults[1], diceResults[2]));
+                paramPairs.Add((diceResults[0] + diceResults[2], diceResults[1]));
+                paramPairs.Add((diceResults[1] + diceResults[2], diceResults[0]));
+            }
+
+            HashSet<(int, int)> usedParams = new HashSet<(int, int)>();
+            int turn = PlayerManager.Instance.GetTurn();
+            for (int i = 0; i < Mathf.Min(CheckButtons.Length, paramPairs.Count); i++)
+            {
+                Button button = CheckButtons[i];
+                if (button != null)
+                {
+                    var paramPair = paramPairs[i];
+                    if (usedParams.Contains(paramPair))
                     {
-                        Button button = CheckButtons[i];
-                        if (button != null)
+                        button.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        button.gameObject.SetActive(true);
+                        ActionWork actionWork = button.GetComponent<ActionWork>();
+                        if (actionWork != null)
                         {
-                            var paramPair = paramPairs[i];
-                            if (usedParams.Contains(paramPair))
-                            {
-                                button.gameObject.SetActive(false);
-                            }
-                            else
-                            {
-                                button.gameObject.SetActive(true);
-                                ActionWork actionWork = button.GetComponent<ActionWork>();
-                                if (actionWork != null)
-                                {
-                                    actionWork.SetData(paramPair.Item1, turn + 1, paramPair.Item2);
-                                }
-                                usedParams.Add(paramPair);
-                            }
-
-                            MoveButtonToCity(button, paramPair.Item1);
+                            actionWork.SetData(paramPair.Item1, turn + 1, paramPair.Item2);
                         }
+                        usedParams.Add(paramPair);
                     }
+
+                    MoveButtonToCity(button, paramPair.Item1);
                 }
-            });
+            }
         }
     }
 
